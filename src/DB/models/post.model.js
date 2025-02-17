@@ -1,5 +1,5 @@
 import { Schema, Types, model } from "mongoose";
-
+import mongoosePaginate from 'mongoose-paginate-v2'
 const schema = new Schema({
     title: {
         type: String,
@@ -34,4 +34,5 @@ schema.virtual("comments", {
     ref: "Comment"
 })
 
+schema.plugin(mongoosePaginate)
 export const postModel = model('Post', schema)

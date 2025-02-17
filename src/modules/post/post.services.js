@@ -1,5 +1,6 @@
 import * as dbServices from "../../DB/db.service.js";
 import { postModel } from "../../DB/models/post.model.js";
+import { pagination } from "../../utils/pagination/pagination.js";
 
 export const createPost = async (req, res, next) => {
     const { title, body } = req.body;
@@ -81,15 +82,20 @@ export const getPost = async (req, res, next) => {
     if (req.params.postId) {
         filter._id = req.params.postId
     }
-    const posts = await dbServices.find({
-        model: postModel,
-        filter,
-        populate:[{
-            path:'likes',
-            select:'userName email profilePic.secure_url'
-        }]
+    const { page, size } = req.query
+    const { skip, limit } = pagination({ page, limit: size })
+
+    const posts = await postModel.paginate({}, {
+        page,
+        limit,
+        customLabels: {
+            docs: "posts",
+            totalDocs: "totalPosts"
+        }
     })
-    res.status(200).json({ posts })
+
+
+    res.status(200).json({ ...posts })
 }
 
 export const like_unlike = async (req, res, next) => {
@@ -109,9 +115,9 @@ export const like_unlike = async (req, res, next) => {
         })
         post.likes = likes
     }
-    else{
+    else {
         post.likes.push(req.user._id)
     }
     await post.save()
-    return res.status(200).json({message:"Done",post})
+    return res.status(200).json({ message: "Done", post })
 }
