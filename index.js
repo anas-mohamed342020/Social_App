@@ -7,6 +7,6 @@ const port = process.env.PORT
 dotenv.config()
 bootstrap(app, express)
 
-
+console.log(new Date())
 
 app.listen(port, () => console.log(chalk.bgWhite.yellow(`Example app listening on port ${port}!`)))
